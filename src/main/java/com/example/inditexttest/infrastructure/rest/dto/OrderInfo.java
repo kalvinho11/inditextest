@@ -11,5 +11,5 @@ public class OrderInfo {
 
     private Integer brandId;
 
-    private Timestamp date;
+    private Timestamp timestamp;
 }

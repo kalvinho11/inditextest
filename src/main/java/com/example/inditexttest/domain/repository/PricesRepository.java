@@ -1,23 +1,23 @@
 package com.example.inditexttest.domain.repository;
 
-import com.example.inditexttest.domain.entities.PriceEntity;
+import com.example.inditexttest.domain.entities.Price;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Date;
 
 @Repository
-public interface PricesRepository extends JpaRepository<PriceEntity, Integer> {
+public interface PricesRepository extends JpaRepository<Price, Integer> {
 
-    @Query("SELECT * FROM PRICES p" +
-            " WHERE p.startDate < :orderDateTime" +
-            " AND p.endDate > :orderDateTime" +
-            " AND p.brandId = :brandId" +
-            " AND p.productId = :productId")
-    Collection<PriceEntity> findCorrectPriceInDate(@Param("orderDateTime") LocalDateTime orderDateTime,
-                                                   @Param("brandId") Integer brandId,
-                                                   @Param("productId") Integer productId);
+    @Query(value = "SELECT * FROM PRICES p" +
+            " WHERE p.START_DATE < :orderDateTime" +
+            " AND p.END_DATE > :orderDateTime" +
+            " AND p.BRAND_ID = :brandId" +
+            " AND p.PRODUCT_ID = :productId", nativeQuery = true)
+    Collection<Price> findCorrectPriceInDate(@Param("orderDateTime") Date orderDateTime,
+                                             @Param("brandId") Integer brandId,
+                                             @Param("productId") Integer productId);
 }

@@ -1,23 +1,26 @@
 package com.example.inditexttest.domain.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
+@Table(name = "PRICES")
 @Data
-public class PriceEntity {
+public class Price {
 
     @Id
     private Integer id;
 
     private Integer brandId;
 
-    private LocalDateTime startDate;
+    private Date startDate;
 
-    private LocalDateTime endDate;
+    private Date endDate;
 
     private Integer priceList;
 
