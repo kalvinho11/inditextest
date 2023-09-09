@@ -1,8 +1,12 @@
-package com.example.inditexttest.infrastructure.config.spring;
+package com.example.inditexttest;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+@ComponentScan
+@EnableJpaRepositories
 @SpringBootApplication
 public class InditexttestApplication {
 

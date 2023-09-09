@@ -5,15 +5,17 @@ import com.example.inditexttest.infrastructure.rest.dto.OrderInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@RestController()
+@RequestMapping("/prices")
 public class PricesController {
 
     @Autowired
     private PricesServiceImpl pricesService;
 
-    @PostMapping
+    @PostMapping("/findCorrect")
     private ResponseEntity<Object> findCorrectPrice(final OrderInfo orderInfo) {
 
         pricesService.obtainPrice(orderInfo);

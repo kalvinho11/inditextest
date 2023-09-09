@@ -10,13 +10,13 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Repository
-public interface PricesRepository extends JpaRepository<PriceEntity, Long> {
+public interface PricesRepository extends JpaRepository<PriceEntity, Integer> {
 
     @Query("SELECT * FROM PRICES p" +
             " WHERE p.startDate < :orderDateTime" +
             " AND p.endDate > :orderDateTime" +
             " AND p.brandId = :brandId" +
-            " AND p.productId = : productId")
+            " AND p.productId = :productId")
     Collection<PriceEntity> findCorrectPriceInDate(@Param("orderDateTime") LocalDateTime orderDateTime,
                                                    @Param("brandId") Integer brandId,
                                                    @Param("productId") Integer productId);

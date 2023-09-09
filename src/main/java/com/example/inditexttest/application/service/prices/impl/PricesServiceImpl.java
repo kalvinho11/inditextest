@@ -20,10 +20,6 @@ public class PricesServiceImpl implements PricesService {
 
         Collection<PriceEntity> priceEntity = findPrice(orderInfo);
 
-        if (priceEntity.isEmpty()) {
-
-        }
-
     }
 
     private Collection<PriceEntity> findPrice(final OrderInfo orderInfo) {
