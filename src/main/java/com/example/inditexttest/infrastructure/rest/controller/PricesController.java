@@ -24,7 +24,7 @@ public class PricesController {
         ResponseEntity response;
 
         try {
-            PriceDto price = pricesService.obtainPrice(orderInfo);
+            final PriceDto price = pricesService.obtainPrice(orderInfo);
             response = ResponseEntity.ok(price);
         } catch (PriceNotFoundException e) {
             response = ResponseEntity.ok(e.getMessage());

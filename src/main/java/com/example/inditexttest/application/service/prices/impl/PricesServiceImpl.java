@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 
 @Service
 public class PricesServiceImpl implements PricesService {
@@ -25,7 +26,7 @@ public class PricesServiceImpl implements PricesService {
     @Override
     public PriceDto obtainPrice(final OrderInfo orderInfo) throws PriceNotFoundException {
 
-        Collection<Price> priceEntity = findInDatabase(orderInfo);
+        List<Price> priceEntity = findInDatabase(orderInfo);
 
         if (priceEntity.isEmpty()) {
             throw new PriceNotFoundException("Not found price for given parameters.");
@@ -36,7 +37,7 @@ public class PricesServiceImpl implements PricesService {
 
     }
 
-    private Collection<Price> findInDatabase(final OrderInfo orderInfo) {
+    private List<Price> findInDatabase(final OrderInfo orderInfo) {
         return pricesRepository.findCorrectPriceInDate(orderInfo.getTimestamp(), orderInfo.getBrandId(),
                 orderInfo.getProductId());
     }

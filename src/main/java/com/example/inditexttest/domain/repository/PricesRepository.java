@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @Repository
 public interface PricesRepository extends JpaRepository<Price, Integer> {
@@ -17,7 +18,7 @@ public interface PricesRepository extends JpaRepository<Price, Integer> {
             " AND p.END_DATE > :orderDateTime" +
             " AND p.BRAND_ID = :brandId" +
             " AND p.PRODUCT_ID = :productId", nativeQuery = true)
-    Collection<Price> findCorrectPriceInDate(@Param("orderDateTime") Date orderDateTime,
-                                             @Param("brandId") Integer brandId,
-                                             @Param("productId") Integer productId);
+    List<Price> findCorrectPriceInDate(@Param("orderDateTime") Date orderDateTime,
+                                       @Param("brandId") Integer brandId,
+                                       @Param("productId") Integer productId);
 }
