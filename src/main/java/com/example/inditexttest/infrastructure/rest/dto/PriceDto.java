@@ -1,10 +1,17 @@
 package com.example.inditexttest.infrastructure.rest.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PriceDto {
 
     private Integer productId;
@@ -13,9 +20,9 @@ public class PriceDto {
 
     private Integer priceList;
 
-    private Date endDate;
+    private LocalDateTime endDate;
 
-    private Date startDate;
+    private LocalDateTime startDate;
 
     private Float price;
 

@@ -1,7 +1,7 @@
 package com.example.inditexttest.infrastructure.rest.controller;
 
+import com.example.inditexttest.application.service.prices.exception.PriceNotFoundException;
 import com.example.inditexttest.application.service.prices.impl.PricesServiceImpl;
-import com.example.inditexttest.domain.entities.Price;
 import com.example.inditexttest.infrastructure.rest.dto.OrderInfo;
 import com.example.inditexttest.infrastructure.rest.dto.PriceDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +19,20 @@ public class PricesController {
     private PricesServiceImpl pricesService;
 
     @PostMapping("/findCorrect")
-    private ResponseEntity<Object> findCorrectPrice(@RequestBody final OrderInfo orderInfo) {
+    private ResponseEntity findCorrectPrice(@RequestBody final OrderInfo orderInfo) {
 
-        PriceDto price = pricesService.obtainPrice(orderInfo);
+        ResponseEntity response;
 
-        return ResponseEntity.ok(price);
+        try {
+            PriceDto price = pricesService.obtainPrice(orderInfo);
+            response = ResponseEntity.ok(price);
+        } catch (PriceNotFoundException e) {
+            response = ResponseEntity.ok(e.getMessage());
+        } catch (Exception e) {
+            response = ResponseEntity.internalServerError().body("An error occurred in server.");
+        }
+
+        return response;
 
     }
 

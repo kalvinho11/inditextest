@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -18,9 +19,9 @@ public class Price {
 
     private Integer brandId;
 
-    private Date startDate;
+    private LocalDateTime startDate;
 
-    private Date endDate;
+    private LocalDateTime endDate;
 
     private Integer priceList;
 

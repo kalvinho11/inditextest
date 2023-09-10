@@ -1,6 +1,7 @@
 package com.example.inditexttest.application.service.prices.impl;
 
 import com.example.inditexttest.application.service.prices.PricesService;
+import com.example.inditexttest.application.service.prices.exception.PriceNotFoundException;
 import com.example.inditexttest.domain.entities.Price;
 import com.example.inditexttest.domain.repository.PricesRepository;
 import com.example.inditexttest.infrastructure.rest.dto.OrderInfo;
@@ -22,9 +23,13 @@ public class PricesServiceImpl implements PricesService {
     private PriceMapper priceMapper;
 
     @Override
-    public PriceDto obtainPrice(final OrderInfo orderInfo) {
+    public PriceDto obtainPrice(final OrderInfo orderInfo) throws PriceNotFoundException {
 
         Collection<Price> priceEntity = findInDatabase(orderInfo);
+
+        if (priceEntity.isEmpty()) {
+            throw new PriceNotFoundException("Not found price for given parameters.");
+        }
 
         return priceMapper.toDto(priceEntity.size() > 1 ? obtainPriorityPrice(priceEntity) : priceEntity.stream()
                 .findFirst().get());
