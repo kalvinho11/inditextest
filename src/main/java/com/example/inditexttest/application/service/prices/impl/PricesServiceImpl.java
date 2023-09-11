@@ -7,6 +7,7 @@ import com.example.inditexttest.domain.repository.PricesRepository;
 import com.example.inditexttest.infrastructure.rest.dto.OrderInfo;
 import com.example.inditexttest.infrastructure.rest.dto.PriceDto;
 import com.example.inditexttest.infrastructure.rest.mapper.PriceMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @Service
+@Slf4j
 public class PricesServiceImpl implements PricesService {
 
     @Autowired
@@ -25,18 +27,23 @@ public class PricesServiceImpl implements PricesService {
     @Override
     public PriceDto obtainPrice(final OrderInfo orderInfo) throws PriceNotFoundException {
 
-        List<Price> priceEntity = findInDatabase(orderInfo);
+        final List<Price> pricesList = findInDatabase(orderInfo);
 
-        if (priceEntity.isEmpty()) {
+        if (pricesList.isEmpty()) {
+            log.debug("Not found price for: {}", orderInfo);
             throw new PriceNotFoundException();
         }
 
-        return priceMapper.toDto(priceEntity.size() > 1 ? obtainPriorityPriceFromList(priceEntity) : priceEntity.stream()
+        log.debug("Prices found from database for given parameters: {}", pricesList);
+
+        return priceMapper.toDto(pricesList.size() > 1 ? obtainPriorityPriceFromList(pricesList) : pricesList.stream()
                 .findFirst().get());
 
     }
 
     private List<Price> findInDatabase(final OrderInfo orderInfo) {
+        log.trace("Query for prices in DB for date {}, brandId {} and productId {}", orderInfo.getTimestamp(),
+                orderInfo.getBrandId(), orderInfo.getProductId());
         return pricesRepository.findCorrectPriceInDate(orderInfo.getTimestamp(), orderInfo.getBrandId(),
                 orderInfo.getProductId());
     }
