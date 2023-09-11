@@ -228,6 +228,18 @@ public class PriceControllerIntegrationTests {
 
     }
 
+    @Test
+    public void orderInfoIsNullReturn400() throws Exception {
+
+        final OrderInfo orderRequest = null;
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/prices/find")
+                        .content(mapper.writeValueAsString(orderRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+    }
+
     private Timestamp obtainTimestampFromDate(final String date) {
 
         final LocalDateTime requestDate = LocalDateTime.parse(date, formatter);
