@@ -4,6 +4,7 @@ import com.example.inditexttest.application.service.prices.exception.PriceNotFou
 import com.example.inditexttest.application.service.prices.impl.PricesServiceImpl;
 import com.example.inditexttest.infrastructure.rest.dto.OrderInfo;
 import com.example.inditexttest.infrastructure.rest.dto.PriceDto;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,8 +19,8 @@ public class PricesController {
     @Autowired
     private PricesServiceImpl pricesService;
 
-    @PostMapping("/findCorrect")
-    public ResponseEntity findCorrectPrice(@RequestBody final OrderInfo orderInfo) {
+    @PostMapping("/find")
+    public ResponseEntity findCorrectPrice(@Valid @RequestBody final OrderInfo orderInfo) {
 
         ResponseEntity response;
 

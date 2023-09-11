@@ -5,6 +5,7 @@ import com.example.inditexttest.infrastructure.rest.dto.PriceDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -33,11 +34,12 @@ public class PriceControllerIntegrationTests {
     private MockMvc mockMvc;
 
     @BeforeEach
-    private void setJavaTimeModule() {
+    public void setJavaTimeModule() {
         mapper.registerModule(new JavaTimeModule());
     }
 
     @Test
+    @DisplayName("Test 1: petición a las 10:00 del día 14 del producto 35455   para la brand 1 (ZARA)")
     public void requestAt10onDay14() throws Exception {
 
         final OrderInfo orderRequest = OrderInfo.builder()
@@ -55,7 +57,7 @@ public class PriceControllerIntegrationTests {
                 .price(35.50F).build();
 
         final MvcResult response = mockMvc
-                .perform(MockMvcRequestBuilders.post("/prices/findCorrect")
+                .perform(MockMvcRequestBuilders.post("/prices/find")
                         .content(mapper.writeValueAsString(orderRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
@@ -66,6 +68,7 @@ public class PriceControllerIntegrationTests {
     }
 
     @Test
+    @DisplayName("Test 2: petición a las 16:00 del día 14 del producto 35455   para la brand 1 (ZARA)")
     public void requestAt16onDay14() throws Exception {
 
         final OrderInfo orderRequest = OrderInfo.builder()
@@ -83,7 +86,7 @@ public class PriceControllerIntegrationTests {
                 .price(25.45F).build();
 
         final MvcResult response = mockMvc
-                .perform(MockMvcRequestBuilders.post("/prices/findCorrect")
+                .perform(MockMvcRequestBuilders.post("/prices/find")
                         .content(mapper.writeValueAsString(orderRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
@@ -94,6 +97,7 @@ public class PriceControllerIntegrationTests {
     }
 
     @Test
+    @DisplayName("Test 3: petición a las 21:00 del día 14 del producto 35455   para la brand 1 (ZARA)")
     public void requestAt21onDay14() throws Exception {
 
         final OrderInfo orderRequest = OrderInfo.builder()
@@ -111,7 +115,7 @@ public class PriceControllerIntegrationTests {
                 .price(35.50F).build();
 
         final MvcResult response = mockMvc
-                .perform(MockMvcRequestBuilders.post("/prices/findCorrect")
+                .perform(MockMvcRequestBuilders.post("/prices/find")
                         .content(mapper.writeValueAsString(orderRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
@@ -122,6 +126,7 @@ public class PriceControllerIntegrationTests {
     }
 
     @Test
+    @DisplayName("Test 4: petición a las 10:00 del día 15 del producto 35455   para la brand 1 (ZARA)")
     public void requestAt10onDay15() throws Exception {
 
         final OrderInfo orderRequest = OrderInfo.builder()
@@ -139,7 +144,7 @@ public class PriceControllerIntegrationTests {
                 .price(30.50F).build();
 
         final MvcResult response = mockMvc
-                .perform(MockMvcRequestBuilders.post("/prices/findCorrect")
+                .perform(MockMvcRequestBuilders.post("/prices/find")
                         .content(mapper.writeValueAsString(orderRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
@@ -150,6 +155,7 @@ public class PriceControllerIntegrationTests {
     }
 
     @Test
+    @DisplayName("Test 5: petición a las 21:00 del día 16 del producto 35455   para la brand 1 (ZARA)")
     public void requestAt21onDay16() throws Exception {
 
         final OrderInfo orderRequest = OrderInfo.builder()
@@ -167,13 +173,58 @@ public class PriceControllerIntegrationTests {
                 .price(38.95F).build();
 
         final MvcResult response = mockMvc
-                .perform(MockMvcRequestBuilders.post("/prices/findCorrect")
+                .perform(MockMvcRequestBuilders.post("/prices/find")
                         .content(mapper.writeValueAsString(orderRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
         assertThat(mapper.readValue(response.getResponse().getContentAsString(), PriceDto.class))
                 .isEqualTo(expectedPrice);
+
+    }
+
+    @Test
+    public void orderWithoutBrandIdShouldReturn400() throws Exception {
+
+        final OrderInfo orderRequest = OrderInfo.builder()
+                .timestamp(obtainTimestampFromDate("2020-06-16 21.00.00"))
+                .productId(35455)
+                .build();
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/prices/find")
+                        .content(mapper.writeValueAsString(orderRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    public void orderWithoutProductIdShouldReturn400() throws Exception {
+
+        final OrderInfo orderRequest = OrderInfo.builder()
+                .timestamp(obtainTimestampFromDate("2020-06-16 21.00.00"))
+                .brandId(1)
+                .build();
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/prices/find")
+                        .content(mapper.writeValueAsString(orderRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    public void orderWithoutTimestampShouldReturn400() throws Exception {
+
+        final OrderInfo orderRequest = OrderInfo.builder()
+                .brandId(1)
+                .productId(35455)
+                .build();
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/prices/find")
+                        .content(mapper.writeValueAsString(orderRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
 
     }
 

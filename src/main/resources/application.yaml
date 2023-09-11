@@ -17,3 +17,6 @@ spring:
 logging:
   level:
     com.example.inditexttest.application.service.prices.impl: DEBUG
+server:
+  error:
+    include-message: always
