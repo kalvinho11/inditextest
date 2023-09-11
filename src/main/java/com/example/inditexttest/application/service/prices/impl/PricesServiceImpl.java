@@ -10,7 +10,6 @@ import com.example.inditexttest.infrastructure.rest.mapper.PriceMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
@@ -29,10 +28,10 @@ public class PricesServiceImpl implements PricesService {
         List<Price> priceEntity = findInDatabase(orderInfo);
 
         if (priceEntity.isEmpty()) {
-            throw new PriceNotFoundException("Not found price for given parameters.");
+            throw new PriceNotFoundException();
         }
 
-        return priceMapper.toDto(priceEntity.size() > 1 ? obtainPriorityPrice(priceEntity) : priceEntity.stream()
+        return priceMapper.toDto(priceEntity.size() > 1 ? obtainPriorityPriceFromList(priceEntity) : priceEntity.stream()
                 .findFirst().get());
 
     }
@@ -42,7 +41,7 @@ public class PricesServiceImpl implements PricesService {
                 orderInfo.getProductId());
     }
 
-    private Price obtainPriorityPrice(final Collection<Price> prices) {
+    private Price obtainPriorityPriceFromList(final List<Price> prices) {
         return prices.stream().max(Comparator.comparingInt(Price::getPriority)).get();
     }
 }

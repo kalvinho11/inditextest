@@ -19,7 +19,7 @@ public class PricesController {
     private PricesServiceImpl pricesService;
 
     @PostMapping("/findCorrect")
-    private ResponseEntity findCorrectPrice(@RequestBody final OrderInfo orderInfo) {
+    public ResponseEntity findCorrectPrice(@RequestBody final OrderInfo orderInfo) {
 
         ResponseEntity response;
 
