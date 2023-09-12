@@ -1,6 +1,7 @@
 package com.example.inditexttest;
 
 import com.example.inditexttest.application.service.prices.exception.PriceNotFoundException;
+import com.example.inditexttest.application.service.prices.exception.ProductNotFoundException;
 import com.example.inditexttest.application.service.prices.impl.PricesServiceImpl;
 import com.example.inditexttest.domain.entities.Price;
 import com.example.inditexttest.domain.repository.PricesRepository;
@@ -38,7 +39,7 @@ public class PriceServiceTests {
     private PriceMapper priceMapper;
 
     @Test
-    public void itOnlyExistsAApplicablePrice() throws PriceNotFoundException {
+    public void itOnlyExistsAApplicablePrice() throws PriceNotFoundException, ProductNotFoundException {
         final OrderInfo orderInfo = OrderInfo.builder().
                 productId(3229).
                 brandId(1).
@@ -54,6 +55,7 @@ public class PriceServiceTests {
                 .productId(mockedPrice.getProductId())
                 .price(mockedPrice.getPrice()).build();
 
+        when(pricesRepository.countPriceByProductId(orderInfo.getProductId())).thenReturn(1L);
 
         when(pricesRepository.findCorrectPriceInDate(orderInfo.getTimestamp(), orderInfo.getBrandId(),
                 orderInfo.getProductId())).thenReturn(List.of(mockedPrice));
@@ -67,7 +69,7 @@ public class PriceServiceTests {
     }
 
     @Test
-    public void itShouldPrioritizeOnePrice() throws PriceNotFoundException {
+    public void itShouldPrioritizeOnePrice() throws PriceNotFoundException, ProductNotFoundException {
         final OrderInfo orderInfo = OrderInfo.builder().
                 productId(3229).
                 brandId(1).
@@ -83,6 +85,7 @@ public class PriceServiceTests {
                 .productId(3655)
                 .price(25.0F).build();
 
+        when(pricesRepository.countPriceByProductId(orderInfo.getProductId())).thenReturn(2L);
 
         when(pricesRepository.findCorrectPriceInDate(orderInfo.getTimestamp(), orderInfo.getBrandId(),
                 orderInfo.getProductId())).thenReturn(mockedPrices);
@@ -96,17 +99,33 @@ public class PriceServiceTests {
     }
 
     @Test
-    public void itShouldThrowPriceNotFoundException() {
+    public void shouldThrowPriceNotFoundException() {
         final OrderInfo orderInfo = OrderInfo.builder().
                 productId(3229).
                 brandId(1).
                 timestamp(obtainTimestampFromDate("2020-06-14 22.00.00")).build();
+
+        when(pricesRepository.countPriceByProductId(orderInfo.getProductId())).thenReturn(1L);
 
         when(pricesRepository.findCorrectPriceInDate(orderInfo.getTimestamp(), orderInfo.getBrandId(),
                 orderInfo.getProductId())).thenReturn(Collections.emptyList());
 
         assertThatExceptionOfType(PriceNotFoundException.class).isThrownBy(() -> pricesService.obtainPrice(orderInfo))
                 .withMessage("Not found price for given parameters.");
+
+    }
+
+    @Test
+    public void shouldThrowProductNotFoundException() {
+        final OrderInfo orderInfo = OrderInfo.builder().
+                productId(3229).
+                brandId(1).
+                timestamp(obtainTimestampFromDate("2020-06-14 22.00.00")).build();
+
+        when(pricesRepository.countPriceByProductId(orderInfo.getProductId())).thenReturn(0L);
+
+        assertThatExceptionOfType(ProductNotFoundException.class).isThrownBy(() -> pricesService.obtainPrice(orderInfo))
+                .withMessage("Not found product with productId " + orderInfo.getProductId());
 
     }
 

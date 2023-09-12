@@ -1,6 +1,7 @@
 package com.example.inditexttest;
 
 import com.example.inditexttest.application.service.prices.exception.PriceNotFoundException;
+import com.example.inditexttest.application.service.prices.exception.ProductNotFoundException;
 import com.example.inditexttest.application.service.prices.impl.PricesServiceImpl;
 import com.example.inditexttest.infrastructure.rest.controller.PricesController;
 import com.example.inditexttest.infrastructure.rest.dto.OrderInfo;
@@ -33,7 +34,7 @@ public class PriceControllerTests {
     private PricesServiceImpl pricesService;
 
     @Test
-    public void happyPath() throws PriceNotFoundException {
+    public void happyPath() throws PriceNotFoundException, ProductNotFoundException {
         final OrderInfo orderRequest = OrderInfo.builder()
                 .timestamp(obtainTimestampFromDate("2020-06-14 10.00.00"))
                 .brandId(1)
@@ -57,7 +58,7 @@ public class PriceControllerTests {
     }
 
     @Test
-    public void shouldReturnNorFoundPriceMessage() throws PriceNotFoundException {
+    public void shouldReturnNotFoundPriceMessage() throws PriceNotFoundException, ProductNotFoundException {
         final OrderInfo orderRequest = OrderInfo.builder()
                 .timestamp(obtainTimestampFromDate("2020-06-14 10.00.00"))
                 .brandId(1)
@@ -68,12 +69,30 @@ public class PriceControllerTests {
 
         ResponseEntity response = pricesController.findCorrectPrice(orderRequest);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         assertThat(response.getBody()).isEqualTo("Not found price for given parameters.");
     }
 
     @Test
-    public void shouldReturn500() throws PriceNotFoundException {
+    public void shouldReturnProductNotFoundMessage() throws PriceNotFoundException, ProductNotFoundException {
+        final OrderInfo orderRequest = OrderInfo.builder()
+                .timestamp(obtainTimestampFromDate("2020-06-14 10.00.00"))
+                .brandId(1)
+                .productId(35455)
+                .build();
+
+        when(pricesService.obtainPrice(orderRequest)).thenThrow(new ProductNotFoundException(orderRequest
+                .getProductId()));
+
+        ResponseEntity response = pricesController.findCorrectPrice(orderRequest);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(response.getBody()).isEqualTo("Not found product with productId " + orderRequest
+                .getProductId());
+    }
+
+    @Test
+    public void shouldReturn500() throws PriceNotFoundException, ProductNotFoundException {
         final OrderInfo orderRequest = OrderInfo.builder()
                 .timestamp(obtainTimestampFromDate("2020-06-14 10.00.00"))
                 .brandId(1)

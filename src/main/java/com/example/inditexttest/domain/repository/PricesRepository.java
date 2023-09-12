@@ -20,4 +20,6 @@ public interface PricesRepository extends JpaRepository<Price, Integer> {
     List<Price> findCorrectPriceInDate(@Param("orderDateTime") Date orderDateTime,
                                        @Param("brandId") Integer brandId,
                                        @Param("productId") Integer productId);
+
+    Long countPriceByProductId(@Param("productId") Integer productId);
 }

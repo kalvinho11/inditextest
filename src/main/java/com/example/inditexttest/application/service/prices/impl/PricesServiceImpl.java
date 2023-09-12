@@ -2,6 +2,7 @@ package com.example.inditexttest.application.service.prices.impl;
 
 import com.example.inditexttest.application.service.prices.PricesService;
 import com.example.inditexttest.application.service.prices.exception.PriceNotFoundException;
+import com.example.inditexttest.application.service.prices.exception.ProductNotFoundException;
 import com.example.inditexttest.domain.entities.Price;
 import com.example.inditexttest.domain.repository.PricesRepository;
 import com.example.inditexttest.infrastructure.rest.dto.OrderInfo;
@@ -25,7 +26,12 @@ public class PricesServiceImpl implements PricesService {
     private PriceMapper priceMapper;
 
     @Override
-    public PriceDto obtainPrice(final OrderInfo orderInfo) throws PriceNotFoundException {
+    public PriceDto obtainPrice(final OrderInfo orderInfo) throws PriceNotFoundException, ProductNotFoundException {
+
+        if (!productIdExists(orderInfo.getProductId())) {
+            log.debug("Not existing product with productId: {}", orderInfo.getProductId());
+            throw new ProductNotFoundException(orderInfo.getProductId());
+        }
 
         final List<Price> pricesList = findInDatabase(orderInfo);
 
@@ -39,6 +45,10 @@ public class PricesServiceImpl implements PricesService {
         return priceMapper.toDto(pricesList.size() > 1 ? obtainPriorityPriceFromList(pricesList) : pricesList.stream()
                 .findFirst().get());
 
+    }
+
+    private Boolean productIdExists(Integer productId) {
+        return pricesRepository.countPriceByProductId(productId) != 0;
     }
 
     private List<Price> findInDatabase(final OrderInfo orderInfo) {
